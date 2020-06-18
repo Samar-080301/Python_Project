@@ -35,9 +35,10 @@ eval_input_fn = make_input_fn(dfeval, y_eval, num_epochs=1, shuffle=False) # eva
 linear_est = tf.estimator.LinearClassifier(feature_columns=feature_columns) # We create a linear estimtor by passing the feature columns we created earlier
 linear_est.train(train_input_fn)  # train
 result = linear_est.evaluate(eval_input_fn)  # get model metrics/stats by testing on tetsing data
-
 clear_output()  # clears consoke output
 print(result['accuracy']) # print accuracy of model
 result=list(linear_est.predict(eval_input_fn))
-print(dfeval.iloc[3])
-print(result[3])
+num=int(input("Enter the index of data for prediction: ")) # Enter the index of data for prediction for self verification of model
+print(dfeval.iloc[num]) # selecting a particular item for prediction
+if result[num]['probabilities'][0]>result[num]['probabilities'][1]: print("Saved") # if-else for printing text of probablistic prediction
+else: print("Saved")  
