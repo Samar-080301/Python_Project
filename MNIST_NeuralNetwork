@@ -1,22 +1,23 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-mnist=tf.keras.datasets.mnist
-(xtrain, ytrain),(xtest, ytest)=mnist.load_data()
+mnist=tf.keras.datasets.mnist  #download the dataset
+(xtrain, ytrain),(xtest, ytest)=mnist.load_data() #split the dataset in test and train
 xtrain=tf.keras.utils.normalize(xtrain, axis=1)
 xtest=tf.keras.utils.normalize(xtest, axis=1)
-model=tf.keras.models.Sequential()
-model.add(tf.keras.layers.Flatten())
-model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu))
-model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu))
-model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu))
-model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu))
-model.add(tf.keras.layers.Dense(10,activation=tf.nn.softmax))
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(xtrain,ytrain,epochs=5)
-model.save('Ashwatdhama')
-myModel=tf.keras.models.load_model('Ashwatdhama')
-prediction=myModel.predict((xtest))
-print(np.argmax(prediction[0]))
-plt.imshow(xtest[0])
-plt.show()
+model=tf.keras.models.Sequential() # start building the model
+model.add(tf.keras.layers.Flatten()) # converting matrix to vector
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function 
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function
+model.add(tf.keras.layers.Dense(10,activation=tf.nn.softmax)) # adding a layer with 10 nodes(as only 10 outputs are possible) and softmax activaation function
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy']) # specifiying hyperparameters
+model.fit(xtrain,ytrain,epochs=5) # load the model
+model.save('Ashwatdhama') # save the model with a unique name
+myModel=tf.keras.models.load_model('Ashwatdhama')  # make an object of the model
+prediction=myModel.predict((xtest)) # run the model object
+for i in range(10): 
+  print(np.argmax(prediction[i]))
+  plt.imshow(xtest[i]) # make visuals of mnist dataset
+  plt.show() #output
