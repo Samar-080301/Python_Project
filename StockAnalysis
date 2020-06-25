@@ -6,26 +6,32 @@ import numpy as np
 import requests
 import bs4
 import lxml
-change=[]
-today = dt.date.today()
+def sp500():  
+    change=[]  
+    for tick in tickers:
+        end_date = dt.date.today()
+        start_date=end_date - dt.timedelta(days=2,922‬)
+        dataset = data.DataReader(tickers, 'yahoo', start_date, end_date)
+        close=dataset['Close']
+        u=close.loc[start_date,tick]
+        v=close.loc['2020-06-24',tick]
+        #v=tommorow date if market is closed and today if open
+        c=((v-u)/u)*100
+        change.append(tick)
+        change.append(c)
+      change=np.array(change)  
+      print(np.sort(change))
+now = dt.datetime.now()
+time = now.strftime("%H:%M:%S")
+print("NASDAQ:",i)
+if (i>"04:30:00")&(i<"21:00:00"):
+  print("show details of today")
+else:
+  print("show details of yesterday")
 q=input("Which category do you want?\n1. Benchamark Stocks(press B)\n2. Day's Best Gainer(press D)\n")
+print("Analysing the market...")
 if q=='b':
- for tick in tickers:
-    start_date = '2012-01-03'
-    end_date = today
-    dataset = data.DataReader(tickers, 'yahoo', start_date, end_date)
-    close=dataset['Close']
-    close_new=close.shift(1)
-    close2=close-close_new
-    close3=close2.dropna()
-    u=close.loc[start_date,tick]
-    v=close.loc['2020-06-24',tick]
-    #v=tommorow date if market is closed and today if open
-    c=((v-u)/u)*100
-    change.append(tick)
-    change.append(c)
-  change=np.array(change)  
-  print(np.sort(change))
+  sp500() 
 elif q=='d':
   url=r'https://www.marketwatch.com/tools/stockresearch/screener/results.asp?submit=Screen&Symbol=true&Symbol=false&ChangePct=true&ChangePct=false&FiftyTwoWeekLow=false&CompanyName=true&CompanyName=false&Volume=true&Volume=false&PERatio=false&Price=true&Price=false&LastTradeTime=false&MarketCap=false&Change=true&Change=false&FiftyTwoWeekHigh=false&MoreInfo=true&MoreInfo=false&SortyBy=Symbol&SortDirection=Descending&ResultsPerPage=OneHundred&TradesShareEnable=false&TradesShareMin=&TradesShareMax=&PriceDirEnable=true&PriceDir=Up&PriceDirPct=100&LastYearEnable=false&LastYearAboveHigh=&TradeVolEnable=false&TradeVolMin=&TradeVolMax=&BlockEnable=false&BlockAmt=&BlockTime=&PERatioEnable=false&PERatioMin=&PERatioMax=&MktCapEnable=false&MktCapMin=&MktCapMax=&MovAvgEnable=false&MovAvgType=Outperform&MovAvgTime=FiftyDay&MktIdxEnable=false&MktIdxType=Outperform&MktIdxPct=&MktIdxExchange=&Exchange=All&IndustryEnable=false&Industry=Accounting'
   res=requests.get(url)
