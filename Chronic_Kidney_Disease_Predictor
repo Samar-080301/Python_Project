@@ -1,0 +1,41 @@
+import tensorflow as tf
+from tensorflow import keras
+import pandas as pd
+from sklearn.model_selection import train_test_split
+import os
+from matplotlib import pyplot as plt
+os.chdir(r'C:\Users\samar\OneDrive\desktop\projects\Chronic_Kidney_Disease')
+os.getcwd()
+x=pd.read_csv('ckd_full.csv')
+x.dropna()
+y=x[['class']]
+y['class']=y['class'].replace(to_replace=(r'ckd',r'notckd'), value=(1,0))
+x=x.drop(columns=['class'])
+x['rbc']=x['rbc'].replace(to_replace=(r'normal',r'abnormal'), value=(1,0))
+x['pcc']=x['pcc'].replace(to_replace=(r'present',r'notpresent'), value=(1,0))
+x['ba']=x['ba'].replace(to_replace=(r'present',r'notpresent'), value=(1,0))
+x['pc']=x['pc'].replace(to_replace=(r'normal',r'abnormal'), value=(1,0))
+x['htn']=x['htn'].replace(to_replace=(r'yes',r'no'), value=(1,0))
+x['dm']=x['dm'].replace(to_replace=(r'yes',r'no'), value=(1,0))
+x['cad']=x['cad'].replace(to_replace=(r'yes',r'no'), value=(1,0))
+x['pe']=x['pe'].replace(to_replace=(r'yes',r'no'), value=(1,0))
+x['ane']=x['ane'].replace(to_replace=(r'yes',r'no'), value=(1,0))
+x['appet']=x['appet'].replace(to_replace=(r'good',r'poor'), value=(1,0))
+x[x=="?"]=np.nan
+xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size=0.01)
+'''xtrain=keras.utils.normalize(xtrain)
+xtest=keras.utils.normalize(xtest)'''
+#begin the model
+model=keras.models.Sequential()
+model.add(keras.layers.Dense(128,input_dim = 24, activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function 
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu)) # adding a layer with 128 nodes and relu activaation function
+model.add(tf.keras.layers.Dense(2,activation=tf.nn.softmax)) # adding a layer with 2 nodes and softmax activaation function
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy']) # specifiying hyperparameters
+model.fit(xtrain,ytrain,epochs=5) # load the model
+model.save('Nephrologist') # save the model with a unique name
+myModel=tf.keras.models.load_model('Nephrologist')  # make an object of the model
+prediction=myModel.predict((xtest))
