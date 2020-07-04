@@ -1,3 +1,7 @@
+from google.colab import drive
+drive.mount('/content/gdrive')
+!cd gdrive/My Drive  /content/gdrive/My Drive/ckd_full.csv
+!ls
 import tensorflow as tf
 from tensorflow import keras
 import pandas as pd
