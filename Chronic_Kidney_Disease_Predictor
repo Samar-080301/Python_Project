@@ -1,13 +1,9 @@
-from google.colab import drive
-drive.mount('/content/gdrive')
-!cd gdrive/My Drive  /content/gdrive/My Drive/ckd_full.csv
-!ls
 import tensorflow as tf
 from tensorflow import keras
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import numpy as np
-xi=pd.read_csv(r'/content/gdrive/My Drive/ckd_full.csv')
+xi=pd.read_csv(r'/ckd_full.csv')
 y=xi[['class']]
 y['class']=y['class'].replace(to_replace=(r'ckd',r'notckd'), value=(1,0))
 x=xi.drop(columns=['class'])
@@ -26,7 +22,7 @@ d=['age', 'bp', 'sg','al', 'su', 'rbc', 'pc', 'pcc', 'ba', 'bgr', 'bu', 'sc', 's
 for i in d:
   x[i] = x[i].astype(float)
 x.fillna(x.median(),inplace=True) 
-xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size=0.025)
+xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size=0.0025)
 #begin the model
 model=keras.models.Sequential()
 model.add(keras.layers.Dense(120,input_dim = 24, activation=tf.nn.tanh))
@@ -36,7 +32,6 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 xtrain_tensor = tf.convert_to_tensor(xtrain, dtype=tf.float32)
 ytrain_tensor = tf.convert_to_tensor(ytrain, dtype=tf.float32)
 model.fit(xtrain_tensor , ytrain_tensor , epochs=1000, batch_size=128, validation_split = 0.15, shuffle=True, verbose=2) # load the model
-es = EarlyStopping(monitor='accuracy', mode='min', verbose=1)
+#es = tf.keras.callbacks.EarlyStopping(monitor='accuracy', mode='min', verbose=1,paitence=5)
 model.save('Nephrologist') # save the model with a unique name
 myModel=tf.keras.models.load_model('Nephrologist')  # make an object of the model
-prediction=myModel.predict((xtest))
