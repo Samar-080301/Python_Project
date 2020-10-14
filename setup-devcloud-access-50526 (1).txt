@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# create .ssh folder if missing
+if [ ! -d ~/.ssh ]; then
+    echo Creating the ~/.ssh directory for SSH client configuration...
+    mkdir ~/.ssh
+else
+    echo The ~/.ssh directory for SSH client configuration already exists.
+fi
+
+# create config file
+echo Appending SSH connection configuration to ~/.ssh/config
+cat << EOF >> ~/.ssh/config
+################################################################################################
+# oneAPI DevCloud SSH config
+################################################################################################
+Host devcloud
+User u50526
+IdentityFile ~/.ssh/devcloud-access-key-50526.txt
+ProxyCommand ssh -T -i ~/.ssh/devcloud-access-key-50526.txt guest@devcloud.intel.com
+
+Host devcloud.proxy
+User u50526
+Port 4022
+IdentityFile ~/.ssh/devcloud-access-key-50526.txt
+ProxyCommand ssh -T devcloud-via-proxy
+
+# If you must route outgoing SSH connection via a corporate proxy,
+# replace PROXY_HOSTNAME and PORT below with the values provided by
+# your network administrator.
+Host devcloud-via-proxy
+User guest
+Hostname devcloud.intel.com
+IdentityFile ~/.ssh/devcloud-access-key-50526.txt
+LocalForward 4022 c009:22
+ProxyCommand nc -x PROXY_HOSTNAME:PORT %h %p
+################################################################################################
+
+################################################################################################
+# DevCloud VSCode config
+################################################################################################
+Host devcloud-vscode
+UserKnownHostsFile /dev/null
+StrictHostKeyChecking no
+Hostname localhost
+User u50526
+Port 5022
+IdentityFile ~/.ssh/devcloud-access-key-50526.txt
+################################################################################################
+
+################################################################################################
+# SSH Tunnel config
+################################################################################################
+Host *.aidevcloud
+User u50526
+IdentityFile ~/.ssh/devcloud-access-key-50526.txt
+ProxyCommand ssh -T devcloud nc %h %p
+LocalForward 5022 localhost:22
+LocalForward 5901 localhost:5901
+################################################################################################
+
+EOF
+
+# create private key file
+echo Creating the private SSH key ~/.ssh/devcloud-access-key-50526.txt
+echo Important: this file is your access key, keep it safe like you would a password.
+cat << EOF > ~/.ssh/devcloud-access-key-50526.txt
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAsh767yVluSH1uYoguE1yV0IE73TOCeYi6I/e0YnI071zHfnc
+yPbvOY5mwGhEdf4CIv+aiZJktpWwVfHYzz8B47YgXqljbYRBbUNl17Um4w/RDHii
+GT/IFEUO/ZFiK/bZg3UWBn76YXqHLohTsmOS1VPuyfuxEKbthQ6Q1EFEXNNZe+nm
+OCCd9bLazFxS/Th0z+BwQC0Np29+6rChz8juisEokOEP2MoV4tIG/kHZ6q61B/aF
+e/qUUEdHV/Qfj2aHp93D3SJOGXG2CrokpBXz+DAHJhQhSOYDASaYEPtCbENc0Nwr
+SxdRdodPuULkAd8I7S/ptihlYyn+UB1AuqoaKwIDAQABAoIBACwm28KtvXJPha5x
+G70zjVUtyzVj+bKgdiS5jNzZz4sU2dUjW2QBOblFoBivf9DTnsn4G+FgBVDw993F
+7h0pHBnKymlMiZXbA7DG1RbME5CTGhmCSYQCuGC14YpfIDuPm8knG8eOcBf7nEif
+iEeewQXaIUW1+uUKy7OAscu7RevQGdXDuZCjOGcQh5Q9OpQ4RlHrhSfUGgD46ELv
+4ua3BZuOiknd2DVHCUBCOR51VdFj84rp/vu4Sx67LG4mG2VSa7dMVg8igUfR4uSY
+3xqfU5NpWhKBzvf117RLqk+OkNTKIsIbS4Gdj3Jz75gXPDAf/QfvNOFfmFjI4b46
+BbgjBdkCgYEA3yzYZI02iy1KRdDPy1zjma5I9ZPDZb336+tLMKbSBenkAm2U6Ufk
+BLgKWtGfJq963cDV0kIDfxKJ3HKKEqkFNn9o4N6l3T0kKOl32fiXW+6B1nLMfQCl
+2wY2CZQ6O59P2i9A6HIC2orm/F1HMT3MteAb2VyyAZV6C1ueUMvozc8CgYEAzFG5
+CDGjiWzyNVCyOjpwJDuUkAlqnq0c2QQXC4nZo8T/CFj4L+izydq35GQBIzuNhlPa
+LnrKxaTEAI0oN721uFGiG8fvtYwu36aMuYZIDMhIcckzuyLPmNuK4z/1eyxGrRDM
+i28V/fzsXE9Q3qHnaTmLsOfZvLE5NvfHAKp2AOUCgYBRUb3npaziObZ+if+tUkN8
+lAzxrs3cHMRhqnLTX3XXwcnbOKKx/ggP0B+1x/v91KMoekNvQa6UduTU9sdo1T2Z
+BgPpLDezzbuHTMrnGbXNQbL9uQbZ5YqJrFG0W9Z8Myidj+pOyHxRtZtFCZgPUT1u
+aCK9qRETkqvNx6yANEy38QKBgF3QuHE2uayERcKNRwjNhGheoxxv9nDdc/2Bj0NR
+DInSDng6wdrdso/gycco1Azlb1pabjghUbHmsci/B9RwW1xCv3iaGUr3Dx7KTptx
+OOwFmp4EkKhAl6nMRL2LxJ/F+L3GlOUBIMv6slzAXpWbKbJ7JdUY4DVv+qFurAV2
+P7CxAoGAGz1ZYRcD5HH36CnuCl6DYyOfdDivDyJzQiiLypZ6ncfJffdVpZqwjpdg
+pCVgCbbfq3zN8W/zfNTaCGDmTAo3hpDDqPTOSY8FxTc6Pn+HH1if34+EtMdGn3X/
+xvby+18pW6+PhPjOLHnYliYuQI11kLR+IBfJ7Ztz3R4jH1r84Bw=
+-----END RSA PRIVATE KEY-----
+
+EOF
+
+# update permissions to the private key file
+chmod 600 ~/.ssh/devcloud-access-key-50526.txt
+
+echo Done! Now you can access Intel DevCloud by running 'ssh devcloud' or, if you are behind a proxy, 'ssh devcloud.proxy'
+
