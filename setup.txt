@@ -99,4 +99,3 @@ EOF
 chmod 600 ~/.ssh/devcloud-access-key-50526.txt
 
 echo Done! Now you can access Intel DevCloud by running 'ssh devcloud' or, if you are behind a proxy, 'ssh devcloud.proxy'
-
